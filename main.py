@@ -3,9 +3,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 from typing import Dict, Callable
 
-df = pd.read_csv('student_habits_performance.csv')
 
-EDA_MODULE: bool = True
+
+EDA_MODULE: bool = False
+CLEANING_MODULE: bool = False
+
+
 menu_options: Dict[str, Callable] = {}
 
 
@@ -39,6 +42,25 @@ def main_menu():
     print("\nMain Menu:")
 
 if __name__ == "__main__":
+    df = pd.read_csv('student_habits_performance.csv')
+
+    if CLEANING_MODULE:
+        #drop id column
+        df.drop('student_id', axis=1, inplace=True)
+
+        #impute mode for parental_education_level
+        df['parental_education_level'] = df['parental_education_level'].fillna(df['parental_education_level'].mode()[0])
+
+        #binary encode
+        binary_mapping = {'Yes': 1, 'No': 0}
+        df['extracurricular_participation'] = df['extracurricular_participation'].map(binary_mapping)
+        df['part_time_job'] = df['part_time_job'].map(binary_mapping)
+
+        # all other cleaning are model dependant and will be done in the modeling module
+
+        #save cleaned data for modeling module
+        df.to_csv('cleaned_data.csv', index=False)
+
     if EDA_MODULE:
         EDA_module(df)
     
