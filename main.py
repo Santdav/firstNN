@@ -9,7 +9,9 @@ EDA_MODULE: bool = False
 CLEANING_MODULE: bool = False
 
 
-menu_options: Dict[str, Callable] = {}
+menu_options: Dict[str, Callable] = {
+    "Linrear Regression": lambda: print("Linear Regression model will be implemented here."),
+}
 
 
 def EDA_module(dataframe):
@@ -39,8 +41,26 @@ def EDA_module(dataframe):
 
 
 def main_menu():
-    print("\nMain Menu:")
 
+    while True:
+        print("\n===Main Menu===")
+        for index, option in enumerate(menu_options.keys(), start=1):
+            print(f"{index}. {option}")
+        choice = input("Select an option (or 'q' to quit): \n>").lower().strip()
+        try:
+            if choice.lower() == 'q':
+                print("Exiting the program.")
+                return;
+            if int(choice) in range(1, len(menu_options) + 1):
+                selected_option = list(menu_options.keys())[int(choice) - 1]
+                menu_options[selected_option]()
+
+        except ValueError as e:
+            print("Not a valid option, try again")
+
+
+
+        
 if __name__ == "__main__":
     df = pd.read_csv('student_habits_performance.csv')
 
@@ -64,4 +84,6 @@ if __name__ == "__main__":
     if EDA_MODULE:
         EDA_module(df)
     
+    df = pd.read_csv('cleaned_data.csv')
+
     main_menu()
