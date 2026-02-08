@@ -3,16 +3,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 from typing import Dict, Callable
 
+from Models.LinearRegression import LinearRegression
 
 
 EDA_MODULE: bool = False
-CLEANING_MODULE: bool = False
+CLEANING_MODULE: bool = True
 
 
-menu_options: Dict[str, Callable] = {
-    "Linrear Regression": lambda: print("Linear Regression model will be implemented here."),
-}
 
+
+def linear_regression_module():
+    print("Linear Regression model will be implemented here.")
 
 def EDA_module(dataframe):
     print("First 5 rows of the dataset:")
@@ -59,7 +60,9 @@ def main_menu():
             print("Not a valid option, try again")
 
 
-
+menu_options: Dict[str, Callable] = {
+    "Linrear Regression": linear_regression_module,
+}
         
 if __name__ == "__main__":
     df = pd.read_csv('student_habits_performance.csv')
@@ -76,14 +79,32 @@ if __name__ == "__main__":
         df['extracurricular_participation'] = df['extracurricular_participation'].map(binary_mapping)
         df['part_time_job'] = df['part_time_job'].map(binary_mapping)
 
-        # all other cleaning are model dependant and will be done in the modeling module
+        # encoding for gender
+        df = pd.get_dummies(df, columns=['gender'], prefix='gender', dtype=int)
+
+        # Encoding for categorical ordinal features
+        diet_quality_mapping = {'Poor': 1, 'Fair': 2, 'Good': 3}
+        df['diet_quality'] = df['diet_quality'].map(diet_quality_mapping)
+
+        parental_education_level_mapping = {
+            "None": 0,
+            'High School': 1,
+            'Bachelor': 2,
+            'Master': 3,
+        }
+        df['parental_education_level'] = df['parental_education_level'].map(parental_education_level_mapping)
+
+        internet_quality_mapping = {'Poor': 1, 'Average': 2, 'Good': 3}
+        df['internet_quality'] = df['internet_quality'].map(internet_quality_mapping)
 
         #save cleaned data for modeling module
         df.to_csv('cleaned_data.csv', index=False)
+
+        print("Data cleaning completed and saved to 'cleaned_data.csv'.")
 
     if EDA_MODULE:
         EDA_module(df)
     
     df = pd.read_csv('cleaned_data.csv')
 
-    main_menu()
+    #main_menu()
